@@ -1,0 +1,16 @@
+{
+ "pais": "CL",
+ "fecha_datos": "2099-12-31",
+ "fuente": "MINSAL, datos.gob.cl (CC0) y © colaboradores de OpenStreetMap (ODbL)",
+ "emergencia": {
+  "ambulancia": "131",
+  "bomberos": "132",
+  "carabineros": "133"
+ },
+ "total": 5591,
+ "con_urgencia": 769,
+ "con_telefono": 3363,
+ "con_horario_osm": 130,
+ "osm_unidos": 1786,
+ "osm_agregados": 305
+}
