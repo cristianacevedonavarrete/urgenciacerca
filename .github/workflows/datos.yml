@@ -8,7 +8,7 @@ permissions:
 jobs:
   datos:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -17,7 +17,7 @@ jobs:
       - name: Bajar MINSAL y OpenStreetMap
         run: |
           mkdir -p nuevo
-          SALIDA_DATOS="$PWD/nuevo" python pipeline/fusionar_chile.py
+          SALIDA_DATOS="$PWD/nuevo" OSM_RESPALDO="$PWD/datos/osm_cl.json" python pipeline/fusionar_chile.py
       - name: Revisar contra lo publicado
         run: python pipeline/revisar_datos.py datos/cl.meta.json nuevo/cl.meta.json
       - name: Publicar si cambió
