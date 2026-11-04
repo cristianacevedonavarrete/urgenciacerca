@@ -1,0 +1,36 @@
+﻿name: Datos semanales
+on:
+  schedule:
+    - cron: '0 10 * * 1' # lunes 10:00 UTC (7:00 en Chile en verano)
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  datos:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Bajar MINSAL y OpenStreetMap
+        run: |
+          mkdir -p nuevo
+          SALIDA_DATOS="$PWD/nuevo" python pipeline/fusionar_chile.py
+      - name: Revisar contra lo publicado
+        run: python pipeline/revisar_datos.py datos/cl.meta.json nuevo/cl.meta.json
+      - name: Publicar si cambió
+        run: |
+          if cmp -s nuevo/cl.json datos/cl.json; then
+            echo "Sin cambios en los centros."
+          else
+            cp nuevo/cl.json nuevo/cl.meta.json datos/
+          fi
+          # Marca de revisión: además evita que GitHub apague la tarea tras 60 días sin actividad.
+          date -u +%F > datos/revisado.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add datos
+          git commit -m "Datos: revisión $(date -u +%F)"
+          git push
