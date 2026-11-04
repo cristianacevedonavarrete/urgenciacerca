@@ -1,4 +1,4 @@
-﻿name: Datos semanales
+name: Datos semanales
 on:
   schedule:
     - cron: '0 10 * * 1' # lunes 10:00 UTC (7:00 en Chile en verano)
