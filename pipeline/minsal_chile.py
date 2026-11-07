@@ -6,6 +6,7 @@ Idempotente: si la caché cruda de hoy existe, no vuelve a descargar.
 import datetime
 import json
 import os
+import re
 import urllib.request
 
 RECURSO = "2c44d782-3365-44e3-aefb-2c8b8363a1bc"
@@ -53,11 +54,50 @@ def telefono(texto):
         d = "".join(ch for ch in parte if ch in "0123456789")
         if d.startswith("56"):
             d = d[2:]
-        # Solo 9 dígitos (formato vigente). Un número de 8 dígitos es ambiguo y en una emergencia
-        # es peor llamar a un número equivocado que no ofrecer el botón.
-        if len(d) == 9:
+        # Solo 9 dígitos que empiecen en 2-9 (formato vigente). Un número de 8 dígitos o con 0 inicial
+        # es ambiguo, y en una emergencia es peor llamar a un número equivocado que no ofrecer el botón.
+        if len(d) == 9 and d[0] in "23456789":
             return "+56" + d
     return None
+
+
+SIGLAS = {"SAPU", "SAR", "SUR", "CESFAM", "CECOSF", "COSAM", "ACHS", "IST", "UEH", "CRS", "CDT", "CRT", "PSR",
+          "SAMU", "CGR", "CGU", "UC", "CAE", "II", "III", "IV", "VI", "VII", "VIII", "IX", "XI", "XII", "XIV", "XV", "XVI"}
+
+
+def limpiar_nombre(nombre):
+    """Quita espacios duros y dobles, y pasa a formato título los nombres escritos todo en mayúsculas."""
+    s = " ".join((nombre or "").replace("\xa0", " ").split())
+    if sum(ch.isalpha() for ch in s) > 3 and s == s.upper():
+        s = " ".join(w if w.strip("().,-") in SIGLAS else w.capitalize() for w in s.split())
+    return s
+
+
+# Lugares que no atienden al público o no sirven a quien busca atención: no entran al paquete.
+TIPOS_FUERA = {
+    "Laboratorio Clínico", "Vacunatorio", "Sala  Externa de Toma de Muestras (SETM)", "Unidad de Procedimientos Móvil",
+    "Atención Remota", "Centro de Regulación Médica de las Urgencias (SAMU)", "Centro de Diálisis",
+    "Centro Corporación para la Nutrición Infantil (CONIN)", "Centro de Rehabilitación", "Hospital de Día",
+    "Centro de Salud Comunitario para Personas con Demencia", "Clínica Dental",
+}
+NOMBRES_FUERA = re.compile(
+    r"servicio m[eé]dico legal|\bSML\b|penitenciari|gendarmer|\bC\.?D\.?P\b|\bC\.?C\.?P\b|\bPRAIS\b|salud funcionari|"
+    r"direcci[oó]n del servicio|actividades gestionadas|vacunatorio|sala de procedimientos|toma de muestras|"
+    r"colegio|escuela|liceo|veterinari", re.IGNORECASE)
+
+# Tipo de urgencia del MINSAL → código corto que usa la app para decidir el horario que muestra.
+TIPO_URGENCIA = {
+    "Urgencia Hospitalaria (UEH)": "UEH",
+    "Urgencia Ambulatoria (SAPU)": "SAPU",
+    "Urgencia Ambulatoria (SAR)": "SAR",
+    "Urgencia Ambulatoria (SUR)": "SUR",
+    "Urgencia ambulatoria privada": "PRIV",
+}
+# Sin urgencia general: dental, centro regulador del SAMU, oncología, institutos de especialidad.
+URGENCIA_FUERA = {"SAPU Dental", "Otro", "Hospitalaria Especializada"}
+CLASE_SAPU = {"Corto": "C", "Largo": "L", "Avanzado": "A", "Verano": "V", "Pendiente": "P"}
+PEDIATRICO = re.compile(r"niños|niño\b|pedi[aá]tric|infantil|exequiel gonz[aá]lez", re.IGNORECASE)
+NO_PEDIATRICO = re.compile(r"conin|mater|renal|materno", re.IGNORECASE)
 
 
 def transformar(registros):
@@ -67,22 +107,37 @@ def transformar(registros):
             continue
         if r.get("FechaCierre"):
             continue
+        tipo = (r.get("TipoEstablecimientoGlosa") or "").strip()
+        nombre = limpiar_nombre(r.get("EstablecimientoGlosa"))
+        if tipo in TIPOS_FUERA or NOMBRES_FUERA.search(nombre):
+            continue
         lat, lon = numero(r.get("Latitud")), numero(r.get("Longitud"))
         # Chile continental e insular: descarta coordenadas vacías o fuera de rango
         if lat is None or lon is None or not (-56.5 < lat < -17.0) or not (-110.0 < lon < -66.0):
             continue
         dir_ = " ".join(x for x in (r.get("NombreVia"), r.get("Numero")) if x and x != "S/N").strip()
-        centros.append({
-            "n": (r.get("EstablecimientoGlosa") or "").strip(),
-            "t": (r.get("TipoEstablecimientoGlosa") or "").strip(),
-            "u": 1 if str(r.get("TieneServicioUrgencia") or "").upper() == "SI" else 0,
+        tu = r.get("TipoUrgencia") or ""
+        urgencia = str(r.get("TieneServicioUrgencia") or "").upper() == "SI" and tu not in URGENCIA_FUERA
+        if "IST" in nombre and "Procedimientos" in nombre:
+            urgencia = False
+        c = {
+            "n": nombre,
+            "t": tipo,
+            "u": 1 if urgencia else 0,
             "lat": round(lat, 6),
             "lon": round(lon, 6),
             "tel": telefono(r.get("TelefonoMovil_TelefonoFijo")),
-            "dir": dir_,
+            "dir": " ".join(dir_.split()),
             "com": (r.get("ComunaGlosa") or "").strip(),
             "pub": 1 if r.get("TipoSistemaSaludGlosa") == "Público" else 0,
-        })
+        }
+        if urgencia:
+            c["tu"] = TIPO_URGENCIA.get(tu, "UEH" if "Hospital" in tipo else "")
+            if c["tu"] == "SAPU":
+                c["cs"] = CLASE_SAPU.get(r.get("ClasificacionTipoSapu") or "", "")
+        if PEDIATRICO.search(nombre) and not NO_PEDIATRICO.search(nombre):
+            c["ped"] = 1
+        centros.append(c)
     return centros
 
 
