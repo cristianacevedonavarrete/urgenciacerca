@@ -2,7 +2,7 @@
 
 Uso: python revisar_datos.py <meta_publicada> <meta_nueva>
 Falla (y GitHub avisa por correo) si el paquete nuevo trae muchos centros menos: suele ser una descarga cortada
-del MINSAL o de Overpass, y es mejor dejar los datos de la semana anterior.
+del MINSAL o de OpenStreetMap, y es mejor dejar los datos de la semana anterior.
 """
 import json
 import sys
