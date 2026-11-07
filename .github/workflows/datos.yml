@@ -14,7 +14,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Bajar MINSAL y OpenStreetMap
+      - name: Instalar lectores de OpenStreetMap
+        run: pip install osmium==4.3.2 shapely==2.2.0
+      - name: Bajar MINSAL y OpenStreetMap (extracto de Geofabrik)
         run: |
           mkdir -p nuevo
           SALIDA_DATOS="$PWD/nuevo" OSM_RESPALDO="$PWD/datos/osm_cl.json" python pipeline/fusionar_chile.py
