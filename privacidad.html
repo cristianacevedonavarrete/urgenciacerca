@@ -14,20 +14,22 @@
 </head>
 <body><main>
 <h1>Política de privacidad de UrgenciaCerca</h1>
-<p class="nota">Vigente desde el 7 de noviembre de 2026 (agrega el correo de contacto y la sección de seguridad, y ubica el banner al pie de la pantalla). Responsable: Cristian Acevedo, desarrollador de UrgenciaCerca en Google Play, Chile. Contacto de privacidad: <a href="mailto:cristianacevedonavarrete@gmail.com">cristianacevedonavarrete@gmail.com</a>.</p>
+<p class="nota">Vigente desde el 7 de noviembre de 2026 (agrega el tránsito en tiempo real, opcional, el correo de contacto y la sección de seguridad, y ubica el banner al pie de la pantalla). Responsable: Cristian Acevedo, desarrollador de UrgenciaCerca en Google Play, Chile. Contacto de privacidad: <a href="mailto:cristianacevedonavarrete@gmail.com">cristianacevedonavarrete@gmail.com</a>.</p>
 <p class="nota">UrgenciaCerca es una app independiente: no representa al Gobierno de Chile, al Ministerio de Salud ni a ninguna otra entidad del Estado.</p>
 
 <h2>Resumen</h2>
 <ul>
   <li>No pedimos cuenta ni registro.</li>
-  <li>Tu ubicación GPS se usa <strong>solo dentro de tu teléfono</strong> para calcular el centro de salud más cercano. No se envía ni se guarda en ningún servidor.</li>
-  <li>La versión actual no envía datos a ningún servidor nuestro. Si más adelante activamos el conteo anónimo de instalaciones (punto 1), lo avisaremos aquí con su fecha.</li>
+  <li>Tu ubicación GPS se usa <strong>dentro de tu teléfono</strong> para calcular el centro de salud más cercano, y no se guarda.</li>
+  <li>Solo si activas el <strong>tránsito en tiempo real</strong> (la app te lo pregunta y puedes apagarlo cuando quieras), tu ubicación, redondeada a unos 100 metros, sale del teléfono hacia nuestro servicio y hacia TomTom para calcular la distancia y el tiempo reales de viaje (punto 1). Si no lo activas, no sale del teléfono.</li>
+  <li>El conteo anónimo de instalaciones no está activo. Si más adelante lo activamos (punto 1), lo avisaremos aquí con su fecha.</li>
   <li>La app muestra un banner de anuncios no personalizados de Google AdMob. Para mostrarlo, Google recibe algunos datos técnicos del teléfono (punto 1, «Publicidad»).</li>
   <li>No vendemos datos personales.</li>
 </ul>
 
 <h2>1. Datos que se usan</h2>
-<p><strong>Ubicación (en el dispositivo).</strong> Al abrir la app, o si tocas «Buscar cerca de mí», la app pide permiso de ubicación mientras está en uso. Con la ubicación calcula distancias contra una lista de centros guardada en el teléfono. No se envía a ningún servidor ni se registra. Si no das el permiso, puedes elegir tu comuna a mano.</p>
+<p><strong>Ubicación (en el dispositivo).</strong> Al abrir la app, o si tocas «Buscar cerca de mí», la app pide permiso de ubicación mientras está en uso. Con la ubicación calcula distancias contra una lista de centros guardada en el teléfono. Si no activas el tránsito en tiempo real, no se envía a ningún servidor ni se registra. Si no das el permiso, puedes elegir tu comuna a mano.</p>
+<p><strong>Tránsito en tiempo real (opcional).</strong> La app te pregunta una vez si quieres ordenar los centros según el tránsito de ahora; puedes cambiarlo en la pantalla principal («Usar tránsito en tiempo real»). Si lo activas, cada búsqueda envía tu ubicación, redondeada a unos 100 metros, y las coordenadas de los 5 centros más cercanos a nuestro servicio en Cloudflare (urgenciacerca-transito.workers.dev). Ese servicio no guarda la ubicación, tiene los registros apagados y la reenvía a TomTom, que calcula la ruta con el tránsito actual y devuelve la distancia y el tiempo de viaje. TomTom recibe el punto, pero no tu dirección IP ni ningún identificador tuyo. Nuestro servicio solo cuenta cuántas rutas se piden cada mes, sin ubicaciones. Para saber cómo trata TomTom esos datos, revisa su política: <a href="https://www.tomtom.com/privacy/">tomtom.com/privacy</a>. Apagado, tu ubicación no sale del teléfono y la distancia se muestra en línea recta.</p>
 <p><strong>Conteo anónimo de instalaciones (no activo en la versión actual).</strong> Cuando se active, para saber en qué sistemas, países y comunas se usa la app, envía una sola vez estos datos: sistema operativo (Android o iOS), versión de la app, país y comuna (la elegida o la más cercana a la búsqueda) y la semana del envío. No incluye identificadores del dispositivo, publicidad, nombre, correo, teléfono ni coordenadas. El servidor no guarda la dirección IP. Los resultados solo se publican agrupados y cuando hay al menos 10 instalaciones en un grupo.</p>
 <p><strong>Actualización de la lista de centros.</strong> Con internet, la app revisa como máximo una vez por semana si hay una lista de centros más nueva y, si la hay, la descarga desde GitHub (raw.githubusercontent.com, del repositorio público de UrgenciaCerca). Es solo una descarga: la app no envía tu ubicación ni otros datos. Como en cualquier visita a una página web, GitHub ve la dirección IP del teléfono y la trata según su política: <a href="https://docs.github.com/es/site-policy/privacy-policies/github-general-privacy-statement">declaración de privacidad de GitHub</a>.</p>
 <p><strong>Llamadas y mapas.</strong> Los botones «Llamar» y «Cómo llegar» abren el marcador o la app de mapas de tu teléfono. Lo que ocurra en esas apps se rige por las políticas de quien las ofrece (por ejemplo, Google Maps).</p>
@@ -42,13 +44,13 @@
 <p><strong>Compras.</strong> La versión actual no tiene compras. Si más adelante se agrega un pago para quitar los anuncios, lo procesará Google Play, nosotros no recibiremos los datos de tu tarjeta y lo avisaremos aquí con su fecha.</p>
 
 <h2>2. Base legal y finalidad</h2>
-<p>Usamos la ubicación con tu consentimiento (el permiso del sistema), solo para mostrarte centros cercanos. El conteo anónimo se basa en nuestro interés legítimo de medir el alcance de la app, sin datos personales. Los anuncios financian que la app sea gratis; son no personalizados, es decir, no se basan en tu historial ni en tus intereses. Esto es conforme a la Ley 19.628 y a la Ley 21.719 de Chile y, para personas en la Unión Europea, al RGPD.</p>
+<p>Usamos la ubicación con tu consentimiento (el permiso del sistema), solo para mostrarte centros cercanos. El envío para el tránsito en tiempo real se basa en un consentimiento aparte, que das en la app y puedes retirar en cualquier momento. El conteo anónimo se basa en nuestro interés legítimo de medir el alcance de la app, sin datos personales. Los anuncios financian que la app sea gratis; son no personalizados, es decir, no se basan en tu historial ni en tus intereses. Esto es conforme a la Ley 19.628 y a la Ley 21.719 de Chile y, para personas en la Unión Europea, al RGPD.</p>
 
 <h2>3. Seguridad</h2>
-<p>La ubicación se procesa solo en la memoria del teléfono: no se escribe en ningún archivo ni se envía a ningún servidor. Todas las conexiones de la app (la descarga de la lista de centros y los anuncios de Google) usan HTTPS/TLS. No tenemos servidores que guarden datos de usuarios.</p>
+<p>La ubicación se procesa en la memoria del teléfono y no se escribe en ningún archivo. Si activas el tránsito, se envía redondeada y nuestro servicio la usa solo durante la consulta, sin guardarla ni registrarla. Todas las conexiones de la app (la descarga de la lista de centros, el tránsito y los anuncios de Google) usan HTTPS/TLS. La clave de TomTom está guardada como secreto en Cloudflare y no va dentro de la app. No tenemos servidores que guarden datos de usuarios.</p>
 
 <h2>4. Conservación</h2>
-<p>La ubicación no se conserva. El conteo anónimo se guarda agregado por semana mientras la app esté disponible.</p>
+<p>La ubicación no se conserva, ni en el teléfono ni en nuestro servicio. Del tránsito solo se guarda el total de rutas pedidas por mes. El conteo anónimo se guarda agregado por semana mientras la app esté disponible.</p>
 
 <h2>5. Tus derechos</h2>
 <p>Como no guardamos datos que te identifiquen, no tenemos datos tuyos que entregar o borrar. Puedes restablecer o borrar tu ID de publicidad en los ajustes de Android (Privacidad → Anuncios). Igual puedes escribirnos para cualquier consulta, o reclamar ante la autoridad de protección de datos de tu país. En Chile, esa autoridad es la Agencia de Protección de Datos Personales.</p>
