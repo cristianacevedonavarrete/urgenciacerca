@@ -9,6 +9,7 @@ import math
 import os
 import unicodedata
 
+import feriados
 import minsal_chile
 import osm_chile
 
@@ -69,6 +70,8 @@ def main():
                 c["h"] = o["horario"]
             if not c["tel"] and tel:
                 c["tel"] = tel
+            elif tel and tel != c["tel"]:
+                c["tel_osm"] = tel  # alternativa si el del MINSAL resulta ser la central del CESFAM
             unidos += 1
         else:
             nombre = minsal_chile.limpiar_nombre(o["n"])
@@ -84,6 +87,30 @@ def main():
                 nuevo["ped"] = 1
             centros.append(nuevo)
             agregados += 1
+
+    # Teléfonos de urgencia que también usa un centro sin urgencia (casi siempre la central del CESFAM, que de
+    # noche puede no contestar). Si OSM trae un número propio de la urgencia, se usa ese; si no, se marca
+    # «tc» y la app avisa que es el teléfono del CESFAM.
+    def compartidos():
+        uso = {}
+        for c in centros:
+            if c["tel"]:
+                uso[c["tel"]] = uso.get(c["tel"], 0) + 1
+        return uso
+    uso = compartidos()
+    cambiados = marcados = 0
+    for c in centros:
+        alternativa = c.pop("tel_osm", None)
+        if not (c["u"] and c["tel"] and uso[c["tel"]] > 1):
+            continue
+        if alternativa and uso.get(alternativa, 0) == 0:
+            c["tel"] = alternativa
+            cambiados += 1
+        else:
+            c["tc"] = 1
+            marcados += 1
+    print("[Fusión] Teléfonos de urgencia compartidos: {} cambiados por el de OSM, {} marcados como del CESFAM.".format(
+        cambiados, marcados))
 
     # Comuna de los centros OSM: la del centro MINSAL más cercano (el texto libre de OSM no sirve para elegir comuna).
     minsal = [c for c in centros if c["src"] == "m"]
@@ -121,6 +148,7 @@ def main():
         "fuente": "MINSAL, datos.gob.cl (CC0) y © colaboradores de OpenStreetMap (ODbL)",
         "licencia": "ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/); ver datos/LICENCIA.md",
         "emergencia": {"ambulancia": "131", "bomberos": "132", "carabineros": "133"},
+        "feriados": feriados.lista(),
         "total": len(centros),
         "con_urgencia": sum(c["u"] for c in centros),
         "con_telefono": sum(1 for c in centros if c["tel"]),
