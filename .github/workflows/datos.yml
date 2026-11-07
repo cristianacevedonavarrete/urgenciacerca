@@ -24,7 +24,8 @@ jobs:
         run: python pipeline/revisar_datos.py datos/cl.meta.json nuevo/cl.meta.json
       - name: Publicar si cambió
         run: |
-          if cmp -s nuevo/cl.json datos/cl.json; then
+          # También se publica si cambiaron los festivos (cada año entra el siguiente) aunque los centros sean los mismos.
+          if cmp -s nuevo/cl.json datos/cl.json && python -c "import json,sys; a,b=(json.load(open(f,encoding='utf-8')) for f in ('nuevo/cl.meta.json','datos/cl.meta.json')); sys.exit(a.get('feriados')!=b.get('feriados'))"; then
             echo "Sin cambios en los centros."
           else
             cp nuevo/cl.json nuevo/cl.meta.json datos/
