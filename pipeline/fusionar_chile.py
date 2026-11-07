@@ -83,6 +83,7 @@ def main():
         "pais": "CL",
         "fecha_datos": fecha,
         "fuente": "MINSAL, datos.gob.cl (CC0) y © colaboradores de OpenStreetMap (ODbL)",
+        "licencia": "ODbL 1.0 (https://opendatacommons.org/licenses/odbl/1-0/); ver datos/LICENCIA.md",
         "emergencia": {"ambulancia": "131", "bomberos": "132", "carabineros": "133"},
         "total": len(centros),
         "con_urgencia": sum(c["u"] for c in centros),
