@@ -15,6 +15,10 @@ def main(publicada, nueva):
         antes = json.load(f)
     with open(nueva, encoding="utf-8") as f:
         ahora = json.load(f)
+    if ahora.get("esquema") != antes.get("esquema"):
+        # Cambió a propósito qué entra al paquete: los totales no se pueden comparar con la versión anterior.
+        print("[Revisión] Esquema nuevo ({} → {}): se publica sin comparar totales.".format(antes.get("esquema"), ahora.get("esquema")))
+        return
     problemas = []
     for clave in ("total", "con_urgencia", "con_telefono"):
         if ahora[clave] < antes[clave] * MINIMO:
