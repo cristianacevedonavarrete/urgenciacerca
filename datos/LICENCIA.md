@@ -17,7 +17,9 @@ Puedes copiar, distribuir, usar y adaptar estos datos, incluso con fines comerci
 - **© colaboradores de OpenStreetMap**, con licencia ODbL:
   https://www.openstreetmap.org/copyright
 
-Esta base **combina y modifica** esas fuentes: junta los registros que coinciden, agrega teléfonos, horarios y centros de OpenStreetMap, y estima algunos horarios. El Ministerio de Salud y OpenStreetMap no son responsables de la combinación ni de sus errores.
+Esta base **combina y modifica** esas fuentes: junta los registros que coinciden, agrega teléfonos, horarios y centros de OpenStreetMap, y deja fuera lugares que no atienden al público. La urgencia de cada centro sale solo del Ministerio de Salud. Los horarios estimados no están en la base: los calcula la app. El Ministerio de Salud y OpenStreetMap no son responsables de la combinación ni de sus errores.
+
+Si usas esta base en una app, un sitio o un mapa (una «obra producida»), muestra un aviso visible como: «Contiene información de © colaboradores de OpenStreetMap (ODbL) y del Ministerio de Salud de Chile (CC0)».
 
 UrgenciaCerca es una app independiente. No representa al Gobierno de Chile, al Ministerio de Salud ni a ninguna otra entidad del Estado.
 
