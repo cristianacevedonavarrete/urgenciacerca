@@ -56,6 +56,8 @@ def telefono(texto):
             d = d[2:]
         # Solo 9 dígitos que empiecen en 2-9 (formato vigente). Un número de 8 dígitos o con 0 inicial
         # es ambiguo, y en una emergencia es peor llamar a un número equivocado que no ofrecer el botón.
+        if len(d) == 9 and d.startswith("800"):
+            return d  # 800 gratuito: se marca sin +56, porque con prefijo internacional puede no conectar
         if len(d) == 9 and d[0] in "23456789":
             return "+56" + d
     return None
@@ -100,6 +102,16 @@ PEDIATRICO = re.compile(r"niños|niño\b|pedi[aá]tric|infantil|exequiel gonz[a�
 NO_PEDIATRICO = re.compile(r"conin|mater|renal|materno", re.IGNORECASE)
 
 
+# Urgencias vigentes que el MINSAL publica sin coordenadas (revisado el 2026-11-07). Solo se usan si siguen sin ellas.
+# Se ubicaron con OpenStreetMap (Nominatim) a partir de la dirección del MINSAL:
+COORDENADAS_FALTANTES = {
+    "202373": (-33.019003, -71.522008),  # SAR Miraflores, Av. Padre Hurtado 2125, Viña del Mar: punto exacto en OSM
+    "200765": (-34.997959, -71.387459),  # SUR Sagrada Familia: funciona en el CESFAM Sagrada Familia (punto en OSM)
+    "202386": (-35.601105, -71.734146),  # SAPU San Javier, Chorrillos 1921: CESFAM San Javier, en la misma avenida (aprox.)
+    "202400": (-28.572312, -70.752660),  # SAR Altiplano Norte, Lourdes 1345, Vallenar: calle Lourdes en Altiplano Norte (aprox.)
+}
+
+
 def transformar(registros):
     centros = []
     for r in registros:
@@ -112,8 +124,13 @@ def transformar(registros):
         if tipo in TIPOS_FUERA or NOMBRES_FUERA.search(nombre):
             continue
         lat, lon = numero(r.get("Latitud")), numero(r.get("Longitud"))
+        if (lat is None or lon is None) and str(r.get("EstablecimientoCodigo")) in COORDENADAS_FALTANTES:
+            lat, lon = COORDENADAS_FALTANTES[str(r.get("EstablecimientoCodigo"))]
         # Chile continental e insular: descarta coordenadas vacías o fuera de rango
         if lat is None or lon is None or not (-56.5 < lat < -17.0) or not (-110.0 < lon < -66.0):
+            if str(r.get("TieneServicioUrgencia") or "").upper() == "SI":
+                print("[Pipeline] AVISO: urgencia sin coordenadas, no entra: {} ({}, código {}). "
+                      "Agregarla a COORDENADAS_FALTANTES.".format(nombre, r.get("ComunaGlosa"), r.get("EstablecimientoCodigo")))
             continue
         dir_ = " ".join(x for x in (r.get("NombreVia"), r.get("Numero")) if x and x != "S/N").strip()
         tu = r.get("TipoUrgencia") or ""
